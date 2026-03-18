@@ -1,37 +1,18 @@
-import { useCallback, useMemo } from "react";
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  addEdge,
-  useNodesState,
-  useEdgesState,
-} from "reactflow";
+import ReactFlow, { Background, Controls, MiniMap } from "reactflow";
 import "reactflow/dist/style.css";
 
 import { nodeTypes } from "./nodes";
 import { edgeTypes } from "./edges";
-import { parseComposeYaml } from "../utils/yamlParser";
-import { sampleComposeYaml } from "../data/sampleCompose";
 
-export default function EditorCanvas() {
-  const parsed = useMemo(() => {
-    try {
-      return parseComposeYaml(sampleComposeYaml);
-    } catch (err) {
-      console.error("YAML 파싱 오류:", err);
-      return { nodes: [], edges: [] };
-    }
-  }, []);
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(parsed.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(parsed.edges);
-
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
-  );
-
+export default function EditorCanvas({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onConnect,
+  onNodeClick,
+  onPaneClick,
+}) {
   return (
     <div className="w-full h-full bg-slate-950">
       <ReactFlow
@@ -42,6 +23,8 @@ export default function EditorCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
         fitView
         proOptions={{ hideAttribution: true }}
       >
