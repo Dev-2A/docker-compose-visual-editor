@@ -9,38 +9,12 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 
+import { nodeTypes } from "./nodes";
 import { parseComposeYaml } from "../utils/yamlParser";
 import { sampleComposeYaml } from "../data/sampleCompose";
 
-// 임시 스타일 매핑 (Step 4에서 커스텀 노드로 교체 예정)
-function applyTempStyles(nodes, edges) {
-  const styleMap = {
-    serviceNode: {
-      background: "#1e293b",
-      color: "#e2e8f0",
-      border: "2px solid #3b82f6",
-      borderRadius: "8px",
-      padding: "12px",
-      fontSize: "13px",
-    },
-    networkNode: {
-      background: "#052e16",
-      color: "#86efac",
-      border: "2px solid #22c55e",
-      borderRadius: "20px",
-      padding: "10px",
-      fontSize: "12px",
-    },
-    volumeNode: {
-      background: "#1c1917",
-      color: "#fed7aa",
-      border: "2px solid #f97316",
-      borderRadius: "8px",
-      padding: "10px",
-      fontSize: "12px",
-    },
-  };
-
+// 엣지 임시 스타일 (Step 5에서 커스텀 엣지로 교체 예정)
+function applyEdgeStyles(edges) {
   const edgeStyleMap = {
     networkEdge: { stroke: "#22c55e", strokeWidth: 2 },
     volumeEdge: { stroke: "#f97316", strokeWidth: 2 },
@@ -51,46 +25,32 @@ function applyTempStyles(nodes, edges) {
     },
   };
 
-  const labelMap = {
+  const labelColorMap = {
     networkEdge: "#22c55e",
     volumeEdge: "#f97316",
     dependsEdge: "#64748b",
   };
 
-  const iconMap = {
-    serviceNode: "🐳",
-    networkNode: "🌐",
-    volumeNode: "💾",
-  };
-
-  const styledNodes = nodes.map((n) => ({
-    ...n,
-    type: "default",
-    data: {
-      label: `${iconMap[n.type] || ""} ${n.data.name}${n.data.image ? ` (${n.data.image})` : ""}`,
-    },
-    style: styleMap[n.type] || {},
-  }));
-
-  const styledEdges = edges.map((e) => ({
+  return edges.map((e) => ({
     ...e,
     type: "default",
-    label: e.data.name,
+    label: e.data?.name || "",
     style: edgeStyleMap[e.type] || {},
     labelStyle: {
-      fill: labelMap[e.type] || "#94a3b8",
+      fill: labelColorMap[e.type] || "#94a3b8",
       fontSize: 11,
     },
   }));
-
-  return { nodes: styledNodes, edges: styledEdges };
 }
 
 export default function EditorCanvas() {
   const parsed = useMemo(() => {
     try {
       const result = parseComposeYaml(sampleComposeYaml);
-      return applyTempStyles(result.nodes, result.edges);
+      return {
+        nodes: result.nodes, // 커스텀 노드 타입 그대로 사용
+        edges: applyEdgeStyles(result.edges),
+      };
     } catch (err) {
       console.error("YAML 파싱 오류:", err);
       return { nodes: [], edges: [] };
@@ -110,6 +70,7 @@ export default function EditorCanvas() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -120,9 +81,10 @@ export default function EditorCanvas() {
         <Controls />
         <MiniMap
           nodeColor={(node) => {
-            if (node.style?.border?.includes("#3b82f6")) return "#3b82f6";
-            if (node.style?.border?.includes("#22c55e")) return "#22c55e";
-            if (node.style?.border?.includes("#f97316")) return "#f97316";
+            const type = node.type;
+            if (type === "serviceNode") return "#3b82f6";
+            if (type === "networkNode") return "#22c55e";
+            if (type === "volumeNode") return "#f97316";
             return "#64748b";
           }}
           maskColor="rgba(0, 0, 0, 0.7)"
