@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "./components/Header";
+import Toolbar from "./components/Toolbar";
 import EditorCanvas from "./components/EditorCanvas";
 import SidePanel from "./components/panels/SidePanel";
 import YamlPreview from "./components/panels/YamlPreview";
@@ -25,10 +26,6 @@ export default function App() {
 
   const [yamlOpen, setYamlOpen] = useState(false);
 
-  const handleToggleYaml = () => {
-    setYamlOpen((prev) => !prev);
-  };
-
   return (
     <div className="h-screen flex flex-col bg-slate-950">
       <Header
@@ -36,8 +33,9 @@ export default function App() {
         onAddNetwork={addNetwork}
         onAddVolume={addVolume}
         yamlOpen={yamlOpen}
-        onToggleYaml={handleToggleYaml}
+        onToggleYaml={() => setYamlOpen((prev) => !prev)}
       />
+      <Toolbar nodes={nodes} edges={edges} onLoad={loadFromYaml} />
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1">
           <EditorCanvas
@@ -51,7 +49,6 @@ export default function App() {
           />
         </div>
 
-        {/* 사이드패널: YAML 프리뷰가 열리면 편집 패널은 닫힘 */}
         {yamlOpen ? (
           <YamlPreview
             nodes={nodes}
