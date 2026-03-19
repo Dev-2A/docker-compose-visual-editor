@@ -8,25 +8,36 @@ function ServiceNode({ data, selected }) {
     : typeof data.environment === "object"
       ? Object.keys(data.environment).length
       : 0;
-  const deps = data.depends_on || [];
+  const deps = Array.isArray(data.depends_on)
+    ? data.depends_on
+    : typeof data.depends_on === "object"
+      ? Object.keys(data.depends_on)
+      : [];
   const hasRestart = !!data.restart;
+  const volCount = (data.volumes || []).length;
+  const netCount = (data.networks || []).length;
 
   return (
     <div
       className={`
-        min-w-[200px] rounded-lg border-2 overflow-hidden
-        ${selected ? "border-blue-400 shadow-lg shadow-blue-500/20" : "border-blue-600"}
+        node-appear min-w-[220px] max-w-[280px] rounded-lg border-2 overflow-hidden
+        transition-shadow duration-150
+        ${
+          selected
+            ? "border-blue-400 shadow-lg shadow-blue-500/25"
+            : "border-blue-600/70 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/10"
+        }
         bg-slate-800
       `}
     >
       {/* 헤더 */}
-      <div className="bg-blue-600/20 px-3 py-2 flex items-center gap-2 border-b border-slate-700">
+      <div className="bg-blue-600/15 px-3 py-2 flex items-center gap-2 border-b border-slate-700/50">
         <span className="text-base">🐳</span>
-        <span className="text-sm font-bold text-blue-300 truncate">
+        <span className="text-sm font-bold text-blue-300 truncate flex-1">
           {data.name}
         </span>
         {hasRestart && (
-          <span className="ml-auto text-[10px] bg-blue-600/30 text-blue-300 px-1.5 py-0.5 rounded">
+          <span className="text-[9px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-full whitespace-nowrap">
             🔄 {data.restart}
           </span>
         )}
@@ -34,10 +45,11 @@ function ServiceNode({ data, selected }) {
 
       {/* 본문 */}
       <div className="px-3 py-2 space-y-1.5">
-        {/* 이미지 또는 빌드 */}
         {data.image && (
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-500 w-10">IMAGE</span>
+            <span className="text-[10px] text-slate-500 w-12 shrink-0">
+              IMAGE
+            </span>
             <span className="text-xs text-slate-300 font-mono truncate">
               {data.image}
             </span>
@@ -45,7 +57,9 @@ function ServiceNode({ data, selected }) {
         )}
         {data.build && (
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-500 w-10">BUILD</span>
+            <span className="text-[10px] text-slate-500 w-12 shrink-0">
+              BUILD
+            </span>
             <span className="text-xs text-slate-300 font-mono truncate">
               {typeof data.build === "string"
                 ? data.build
@@ -54,15 +68,16 @@ function ServiceNode({ data, selected }) {
           </div>
         )}
 
-        {/* 포트 */}
         {ports.length > 0 && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-500 w-10">PORTS</span>
+          <div className="flex items-start gap-1.5">
+            <span className="text-[10px] text-slate-500 w-12 shrink-0 pt-0.5">
+              PORTS
+            </span>
             <div className="flex flex-wrap gap-1">
               {ports.map((p, i) => (
                 <span
                   key={i}
-                  className="text-[10px] bg-cyan-900/40 text-cyan-300 px-1.5 py-0.5 rounded font-mono"
+                  className="text-[10px] bg-cyan-900/30 text-cyan-300 px-1.5 py-0.5 rounded font-mono"
                 >
                   {p}
                 </span>
@@ -72,21 +87,30 @@ function ServiceNode({ data, selected }) {
         )}
 
         {/* 하단 뱃지 */}
-        <div className="flex gap-1.5 pt-1">
+        <div className="flex flex-wrap gap-1 pt-1">
           {envCount > 0 && (
-            <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">
-              🔑 env ×{envCount}
+            <span className="text-[10px] bg-slate-700/60 text-slate-400 px-1.5 py-0.5 rounded">
+              🔑 ×{envCount}
             </span>
           )}
           {deps.length > 0 && (
-            <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">
-              ⬆️ deps ×{deps.length}
+            <span className="text-[10px] bg-slate-700/60 text-slate-400 px-1.5 py-0.5 rounded">
+              ⬆️ ×{deps.length}
+            </span>
+          )}
+          {netCount > 0 && (
+            <span className="text-[10px] bg-green-900/30 text-green-400 px-1.5 py-0.5 rounded">
+              🌐 ×{netCount}
+            </span>
+          )}
+          {volCount > 0 && (
+            <span className="text-[10px] bg-orange-900/30 text-orange-400 px-1.5 py-0.5 rounded">
+              💾 ×{volCount}
             </span>
           )}
         </div>
       </div>
 
-      {/* 핸들 */}
       <Handle
         type="target"
         position={Position.Top}

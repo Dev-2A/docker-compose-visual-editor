@@ -3,6 +3,8 @@ import "reactflow/dist/style.css";
 
 import { nodeTypes } from "./nodes";
 import { edgeTypes } from "./edges";
+import EmptyState from "./EmptyState";
+import KeyboardHelp from "./KeyboardHelp";
 
 export default function EditorCanvas({
   nodes,
@@ -13,8 +15,12 @@ export default function EditorCanvas({
   onNodeClick,
   onPaneClick,
 }) {
+  const isEmpty = nodes.length === 0;
+
   return (
-    <div className="w-full h-full bg-slate-950">
+    <div className="relative w-full h-full bg-slate-950">
+      {isEmpty && <EmptyState />}
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -27,10 +33,13 @@ export default function EditorCanvas({
         onPaneClick={onPaneClick}
         deleteKeyCode={["Backspace", "Delete"]}
         fitView
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.2}
+        maxZoom={2}
         proOptions={{ hideAttribution: true }}
       >
-        <Background color="#334155" gap={20} size={1} />
-        <Controls />
+        <Background color="#334155" gap={20} size={1} variant="dots" />
+        <Controls position="bottom-left" showInteractive={false} />
         <MiniMap
           nodeColor={(node) => {
             const type = node.type;
@@ -41,8 +50,12 @@ export default function EditorCanvas({
           }}
           maskColor="rgba(0, 0, 0, 0.7)"
           style={{ backgroundColor: "#0f172a" }}
+          pannable
+          zoomable
         />
       </ReactFlow>
+
+      <KeyboardHelp />
     </div>
   );
 }

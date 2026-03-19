@@ -2,17 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ReactFlow 다크 테마 보정 */
+/* ── 기본 스크롤바 다크 테마 ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ── ReactFlow 다크 테마 보정 ── */
 .react-flow__controls button {
   background-color: #1e293b !important;
   color: #e2e8f0 !important;
   border: 1px solid #334155 !important;
+  width: 28px !important;
+  height: 28px !important;
 }
 
 .react-flow__controls button:hover {
   background-color: #334155 !important;
 }
 
-.react-flow__edge-texbg {
+.react-flow__controls button svg {
+  fill: #e2e8f0 !important;
+}
+
+.react-flow__edge-textbg {
   fill: #0f172a !important;
+}
+
+.react-flow__attribution {
+  display: none !important;
+}
+
+/* ── 노드 호버/선택 애니메이션 ── */
+.react-flow__node {
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.react-flow__node:hover {
+  z-index: 10 !important;
+}
+
+.react-flow__node.selected {
+  z-index: 20 !important;
+}
+
+/* ── 엣지 호버 ── */
+.react-flow__edge {
+  cursor: pointer;
+}
+
+/* ── 노드 등장 애니메이션 ── */
+@keyframes nodeAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.node-appear {
+  animation: nodeAppear 0.2s ease-out;
+}
+
+/* ── 사이드패널 슬라이드 ── */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.panel-slide-in {
+  animation: slideIn 0.2s ease-out;
+}
+
+/* ── 선택 영역 ── */
+.react-flow__selection {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
 }

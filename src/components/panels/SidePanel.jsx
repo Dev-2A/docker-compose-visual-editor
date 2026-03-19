@@ -12,15 +12,16 @@ export default function SidePanel({ node, onUpdate, onDelete, onClose }) {
   };
 
   const Panel = panelMap[node.type];
-
   if (!Panel) return null;
 
   return (
-    <Panel
-      node={node}
-      onUpdate={onUpdate}
-      onDelete={onDelete}
-      onClose={onClose}
-    />
+    <div className="panel-slide-in">
+      <Panel
+        node={node}
+        onUpdate={onUpdate}
+        onDelete={onDelete}
+        onClose={onClose}
+      />
+    </div>
   );
 }

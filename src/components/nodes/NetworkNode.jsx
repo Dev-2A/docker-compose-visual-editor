@@ -5,17 +5,22 @@ function NetworkNode({ data, selected }) {
   return (
     <div
       className={`
-        min-w-[140px] rounded-full border-2 px-4 py-3 text-center
-        ${selected ? "border-green-400 shadow-lg shadow-green-500/20" : "border-green-600"}
-        bg-green-950/60
+        node-appear min-w-[140px] rounded-full border-2 px-5 py-3 text-center
+        transition-shadow duration-150
+        ${
+          selected
+            ? "border-green-400 shadow-lg shadow-green-500/25"
+            : "border-green-600/70 hover:border-green-500 hover:shadow-md hover:shadow-green-500/10"
+        }
+        bg-green-950/50
       `}
     >
       <div className="flex items-center justify-center gap-1.5">
         <span className="text-sm">🌐</span>
         <span className="text-xs font-bold text-green-300">{data.name}</span>
       </div>
-      <div className="text-[10px] text-green-500 mt-0.5">
-        {data.external ? "external" : data.driver || "bridge"}
+      <div className="text-[10px] text-green-500/80 mt-0.5">
+        {data.external ? "🔗 external" : data.driver || "bridge"}
       </div>
 
       <Handle
