@@ -14,13 +14,19 @@ export default function App() {
     onNodeClick,
     onPaneClick,
     addService,
+    addNetwork,
+    addVolume,
     deleteNode,
     updateNodeData,
   } = useCompose();
 
   return (
     <div className="h-screen flex flex-col bg-slate-950">
-      <Header onAddService={addService} />
+      <Header
+        onAddService={addService}
+        onAddNetwork={addNetwork}
+        onAddVolume={addVolume}
+      />
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1">
           <EditorCanvas
